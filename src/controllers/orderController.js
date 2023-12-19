@@ -59,7 +59,7 @@ const updateProductQuantity = (detailObjs) => {
                     newQuanity = 0;
                 }
 
-                let newSaledQuanity = product.toObject().quantity + detailObj.quantity;
+                let newSaledQuanity = product.toObject().saledQuantity + detailObj.quantity;
 
                 const newProduct = await Product.findOneAndUpdate(
                     { _id: detailObj.product },

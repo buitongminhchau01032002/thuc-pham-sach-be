@@ -15,7 +15,7 @@ const DetailImportSchema = new Schema(
         },
         product: {
             type: Schema.Types.ObjectId,
-            ref: 'product',
+            ref: 'products',
         },
         quantity: {
             type: Number,

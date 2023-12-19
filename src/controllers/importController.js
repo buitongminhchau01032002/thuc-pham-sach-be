@@ -143,7 +143,12 @@ const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
         let _import;
-        _import = await Import.findOne({ id }).populate('details');
+        _import = await Import.findOne({ id }).populate({
+            path: 'details',
+            populate: {
+                path: 'product',
+            },
+        });
         // const details = await DetailImport.find({ import: _import.toObject()._id }).populate({
         //     path: 'product',
         //     populate: {
