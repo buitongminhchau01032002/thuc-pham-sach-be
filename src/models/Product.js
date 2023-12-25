@@ -53,6 +53,12 @@ const ProductSchema = new Schema(
     }
 );
 
+ProductSchema.virtual('ratings', {
+    ref: 'ratings',
+    localField: '_id',
+    foreignField: 'product',
+});
+
 ProductSchema.plugin(mongooseDelete, { deletedAt: true, overrideMethods: 'all' });
 ProductSchema.plugin(AutoIncrement, { id: 'products', inc_field: 'id' });
 

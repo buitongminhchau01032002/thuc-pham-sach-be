@@ -1,10 +1,11 @@
-const Product = require('../models/Product');
+const Rating = require('../models/Rating');
 
-// [GET] api/product
+// [GET] api/rating
 const read = async (req, res, next) => {
     try {
-        const products = await Product.find().populate('type').populate('ratings');
-        return res.status(200).json({ success: true, products });
+        let ratings;
+        ratings = await Rating.find();
+        return res.status(200).json({ success: true, ratings });
     } catch (err) {
         console.log(err);
         return res
@@ -13,27 +14,33 @@ const read = async (req, res, next) => {
     }
 };
 
-// [POST] api/product
+// [POST] api/rating
 const create = async (req, res, next) => {
-    const { name, description, importPrice, price, type, images, status } = req.body;
+    const { product, customer, score, commnent } = req.body;
     // Validate field
-    if (!name || !description || !importPrice || !price || !type || !images) {
+    if (!product || !customer || !score) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
     }
 
-    try {
-        const newProduct = new Product({
-            name,
-            description,
-            importPrice,
-            price,
-            type,
-            images,
-            status,
-        });
-        await newProduct.save();
+    if (score < 1 || score > 5) {
+        return res.status(400).json({ success: false, status: 400, message: 'Score invalid' });
+    }
 
-        return res.status(201).json({ success: true, product: newProduct });
+    // Check has rating
+    const existRating = await Rating.findOne({ product, customer });
+    if (existRating) {
+        return res.status(400).json({ success: false, status: 400, message: 'Rating existed' });
+    }
+
+    try {
+        const rating = new Rating({
+            product,
+            customer,
+            score,
+            commnent,
+        });
+        await rating.save();
+        return res.status(201).json({ success: true, rating });
     } catch (err) {
         console.log(err);
         return res
@@ -42,19 +49,14 @@ const create = async (req, res, next) => {
     }
 };
 
-// [GET] api/product/:id
+// [GET] api/rating/:id
 const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const product = await Product.findOne({ id })
-            .populate('type')
-            .populate({
-                path: 'ratings',
-                populate: {
-                    path: 'customer',
-                },
-            });
-        return res.status(200).json({ success: true, product });
+        let rating;
+        rating = await Rating.findOne({ id });
+
+        return res.status(200).json({ success: true, rating });
     } catch (err) {
         console.log(err);
         return res
@@ -63,24 +65,26 @@ const readOne = async (req, res, next) => {
     }
 };
 
-// [PUT] api/product/:id
+// [PUT] api/rating/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
-    const bodyObj = req.body;
+    const { score, commnent } = req.body;
+
     const updateObj = {};
+    if (score) {
+        updateObj.score = score;
+    }
+    if (commnent) {
+        updateObj.commnent = commnent;
+    }
 
-    Object.keys(bodyObj).forEach((key) => {
-        if (bodyObj[key] !== undefined) {
-            updateObj[key] = bodyObj[key];
-        }
-    });
-
-    // Update product
+    // Update rating
     try {
-        const newProduct = await Product.findOneAndUpdate({ id }, updateObj, {
+        const rating = await Rating.findOneAndUpdate({ id }, updateObj, {
             new: true,
         });
-        return res.status(200).json({ success: true, product: newProduct });
+
+        return res.status(200).json({ success: true, rating });
     } catch (err) {
         console.log(err);
         return res
@@ -89,14 +93,14 @@ const update = async (req, res, next) => {
     }
 };
 
-// [DELETE] api/product/:id
+// [DELETE] api/rating/:id
 const destroy = async (req, res, next) => {
     if (!req.params.id) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed id' });
     }
 
     try {
-        await Product.delete({ id: req.params.id });
+        await Rating.delete({ id: req.params.id });
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
