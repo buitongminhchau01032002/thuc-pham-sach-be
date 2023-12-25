@@ -5,25 +5,13 @@ const argon2 = require('argon2');
 const read = async (req, res, next) => {
     try {
         let accounts;
-        accounts = await Account.aggregate([
-            {
-                $lookup: {
-                    from: 'roles',
-                    localField: 'role',
-                    foreignField: '_id',
-                    as: 'role',
-                },
-            },
-            {
-                $unwind: '$role',
-            },
-            { $match: req.filters },
-            { $sort: req.sorts },
-        ]);
+        accounts = await Account.find().populate('role');
         return res.status(200).json({ success: true, accounts });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -40,7 +28,9 @@ const create = async (req, res, next) => {
         let account;
         account = await Account.findOne({ username });
         if (account) {
-            return res.status(401).json({ success: false, status: 401, message: 'username already exists' });
+            return res
+                .status(401)
+                .json({ success: false, status: 401, message: 'username already exists' });
         }
 
         const hash = await argon2.hash(password);
@@ -55,7 +45,9 @@ const create = async (req, res, next) => {
         return res.status(201).json({ success: true, account: newAccount });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -68,7 +60,9 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, account });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -84,7 +78,9 @@ const update = async (req, res, next) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     Object.keys(bodyObj).forEach((key) => {
@@ -101,7 +97,9 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, account: newAccount });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -116,7 +114,9 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 

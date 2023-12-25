@@ -1,16 +1,16 @@
 const Role = require('../models/Role');
-const Permission = require('../models/Permission');
-const Function = require('../models/Function');
 
 // [GET] api/role
 const read = async (req, res, next) => {
     try {
         let roles;
-        roles = await Role.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
+        roles = await Role.find();
         return res.status(200).json({ success: true, roles });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -26,47 +26,15 @@ const create = async (req, res, next) => {
         const role = new Role({
             name,
             description,
+            functions,
         });
         await role.save();
-
-        // Have functions --> update permission
-        let createPermissionPromises = undefined;
-        if (functions) {
-            createPermissionPromises = functions.map(
-                (funcId) =>
-                    new Promise(async (resolve, reject) => {
-                        try {
-                            const newPermission = new Permission({
-                                role: role.toObject()._id,
-                                function: funcId,
-                            });
-                            await newPermission.save();
-                            resolve(newPermission);
-                        } catch (error) {
-                            console.log(error);
-                            reject();
-                        }
-                    })
-            );
-        }
-        if (createPermissionPromises) {
-            await Promise.all(createPermissionPromises);
-        }
-
-        // Get function
-        let permissions;
-        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
-
-        let funcs;
-        funcs =
-            permissions?.map((permission) => {
-                return permission.toObject().function;
-            }) || null;
-
-        return res.status(201).json({ success: true, role: { ...role.toObject(), functions: funcs } });
+        return res.status(201).json({ success: true, role });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -77,18 +45,12 @@ const readOne = async (req, res, next) => {
         let role;
         role = await Role.findOne({ id });
 
-        // Get function
-        let permissions;
-        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
-
-        const functions = permissions.map((permission) => {
-            return permission.toObject().function;
-        });
-
-        return res.status(200).json({ success: true, role: { ...role.toObject(), functions } });
+        return res.status(200).json({ success: true, role });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -104,6 +66,9 @@ const update = async (req, res, next) => {
     if (description) {
         updateObj.description = description;
     }
+    if (functions) {
+        updateObj.functions = functions;
+    }
 
     // Update role
     try {
@@ -111,47 +76,12 @@ const update = async (req, res, next) => {
             new: true,
         });
 
-        // Have functions --> update permission
-        let createPermissionPromises = undefined;
-        if (functions) {
-            // Delete old permission
-            await Permission.deleteMany({ role: role.toObject()._id });
-
-            createPermissionPromises = functions.map(
-                (funcId) =>
-                    new Promise(async (resolve, reject) => {
-                        try {
-                            const newPermission = new Permission({
-                                role: role.toObject()._id,
-                                function: funcId,
-                            });
-                            await newPermission.save();
-                            resolve(newPermission);
-                        } catch (error) {
-                            console.log(error);
-                            reject();
-                        }
-                    })
-            );
-        }
-        if (createPermissionPromises) {
-            await Promise.all(createPermissionPromises);
-        }
-
-        // Get function
-        let permissions;
-        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
-
-        let funcs;
-        funcs =
-            permissions?.map((permission) => {
-                return permission.toObject().function;
-            }) || null;
-
-        return res.status(200).json({ success: true, role: { ...role.toObject(), functions: funcs } });
+        return res.status(200).json({ success: true, role });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -166,7 +96,9 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 

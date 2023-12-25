@@ -16,6 +16,11 @@ const RoleSchema = new Schema(
         description: {
             type: String,
         },
+        functions: [
+            {
+                type: String,
+            },
+        ],
     },
     {
         timestamps: true,
