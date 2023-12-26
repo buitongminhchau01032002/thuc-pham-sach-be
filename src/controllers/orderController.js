@@ -89,29 +89,21 @@ const updateProductQuantity = (detailObjs) => {
 const create = async (req, res, next) => {
     const {
         customerId,
+        coupon,
         deliveryStatus,
         paymentStatus,
         details,
         receivedMoney,
         totalPrice,
+        intoMoney,
         exchangeMoney,
         phone,
         address,
     } = req.body;
 
     // Validate field
-    if (!totalPrice) {
+    if (!totalPrice || !intoMoney) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
-    }
-
-    // Check and create customer
-    if (customerId) {
-        // set phone, address....
-    } else {
-        //Don't have customer in db
-        // if (!phone || !address) {
-        //     return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
-        // }
     }
 
     // Create order
@@ -123,9 +115,11 @@ const create = async (req, res, next) => {
             paymentStatus: paymentStatus || 'paid',
             receivedMoney,
             totalPrice,
+            intoMoney,
             exchangeMoney,
             address,
             phone,
+            coupon,
         });
         await newOrder.save();
     } catch (err) {
@@ -176,18 +170,13 @@ const readOne = async (req, res, next) => {
         let order;
         order = await Order.findOne({ id })
             .populate('customer')
+            .populate('coupon')
             .populate({
                 path: 'details',
                 populate: {
                     path: 'product',
                 },
             });
-        // const details = await DetailOrder.find({ order: order.toObject()._id }).populate({
-        //     path: 'dettails',
-        //     populate: {
-        //         path: 'product',
-        //     },
-        // });
 
         return res.status(200).json({ success: true, order: { ...order.toObject() } });
     } catch (err) {

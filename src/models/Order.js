@@ -14,7 +14,15 @@ const OrderSchema = new Schema(
             ref: 'customers',
             require: false,
         },
+        coupon: {
+            type: Schema.Types.ObjectId,
+            ref: 'coupons',
+            require: false,
+        },
         totalPrice: {
+            type: Number,
+        },
+        intoMoney: {
             type: Number,
         },
         receivedMoney: {

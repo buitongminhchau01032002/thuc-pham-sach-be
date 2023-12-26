@@ -14,6 +14,7 @@ const upload = require('./upload');
 const _import = require('./import');
 const detailImport = require('./detailImport');
 const recommend = require('./recommend');
+const coupon = require('./coupon');
 
 router.use('/product', productRoute);
 router.use('/product-type', productTypeRoute);
@@ -29,5 +30,6 @@ router.use('/upload', upload);
 router.use('/import', _import);
 router.use('/detail-import', detailImport);
 router.use('/recommend', recommend);
+router.use('/coupon', coupon);
 
 module.exports = router;
