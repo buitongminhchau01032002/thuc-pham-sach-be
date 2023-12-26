@@ -13,6 +13,7 @@ const func = require('./function');
 const upload = require('./upload');
 const _import = require('./import');
 const detailImport = require('./detailImport');
+const recommend = require('./recommend');
 
 router.use('/product', productRoute);
 router.use('/product-type', productTypeRoute);
@@ -27,5 +28,6 @@ router.use('/function', func);
 router.use('/upload', upload);
 router.use('/import', _import);
 router.use('/detail-import', detailImport);
+router.use('/recommend', recommend);
 
 module.exports = router;
