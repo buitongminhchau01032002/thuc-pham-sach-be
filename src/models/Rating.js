@@ -20,7 +20,7 @@ const RatingSchema = new Schema(
         score: {
             type: Number,
         },
-        commnent: {
+        comment: {
             type: String,
         },
     },

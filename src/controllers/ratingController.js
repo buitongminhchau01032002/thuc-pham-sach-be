@@ -16,7 +16,7 @@ const read = async (req, res, next) => {
 
 // [POST] api/rating
 const create = async (req, res, next) => {
-    const { product, customer, score, commnent } = req.body;
+    const { product, customer, score, comment } = req.body;
     // Validate field
     if (!product || !customer || !score) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
@@ -37,7 +37,7 @@ const create = async (req, res, next) => {
             product,
             customer,
             score,
-            commnent,
+            comment,
         });
         await rating.save();
         return res.status(201).json({ success: true, rating });
@@ -68,14 +68,14 @@ const readOne = async (req, res, next) => {
 // [PUT] api/rating/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
-    const { score, commnent } = req.body;
+    const { score, comment } = req.body;
 
     const updateObj = {};
     if (score) {
         updateObj.score = score;
     }
-    if (commnent) {
-        updateObj.commnent = commnent;
+    if (comment) {
+        updateObj.comment = comment;
     }
 
     // Update rating
