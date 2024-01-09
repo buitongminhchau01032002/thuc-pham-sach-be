@@ -34,10 +34,7 @@ function getUserSimilarities(userRatingsNormalized, targetUser) {
     const userSimilarities = {};
     Object.keys(userRatingsNormalized).forEach((user) => {
         if (user !== targetUser) {
-            userSimilarities[user] = cosineSimilarity(
-                userRatingsNormalized[user],
-                userRatingsNormalized[targetUser]
-            );
+            userSimilarities[user] = cosineSimilarity(userRatingsNormalized[user], userRatingsNormalized[targetUser]);
         }
     });
 
@@ -110,13 +107,7 @@ function collaborativeFiltering(data, targetUser) {
     const userRatings = getUserRatings(data);
     const normalizedRatings = getNormalizedRatings(userRatings);
     const userSimilarities = getUserSimilarities(normalizedRatings, targetUser);
-    const ratingPredictions = getRatingPredictions(
-        data,
-        normalizedRatings,
-        userSimilarities,
-        targetUser,
-        2
-    );
+    const ratingPredictions = getRatingPredictions(data, normalizedRatings, userSimilarities, targetUser, 2);
     return ratingPredictions;
 }
 
@@ -138,11 +129,14 @@ const recommend = async (req, res, next) => {
         let _product = await Product.findOne({ _id: mongoose.Types.ObjectId(r.item) })
             .populate('type')
             .populate('ratings');
-        _product = {
-            ..._product.toObject(),
-            ratingPrediction: r.ratingPrediction,
-        };
-        return _product;
+
+        if (_product) {
+            _product = {
+                ..._product.toObject(),
+                ratingPrediction: r.ratingPrediction,
+            };
+            return _product;
+        }
     });
 
     const products = await Promise.all(productsPromise);
