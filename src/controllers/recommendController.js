@@ -34,7 +34,10 @@ function getUserSimilarities(userRatingsNormalized, targetUser) {
     const userSimilarities = {};
     Object.keys(userRatingsNormalized).forEach((user) => {
         if (user !== targetUser) {
-            userSimilarities[user] = cosineSimilarity(userRatingsNormalized[user], userRatingsNormalized[targetUser]);
+            userSimilarities[user] = cosineSimilarity(
+                userRatingsNormalized[user],
+                userRatingsNormalized[targetUser]
+            );
         }
     });
 
@@ -107,12 +110,21 @@ function collaborativeFiltering(data, targetUser) {
     const userRatings = getUserRatings(data);
     const normalizedRatings = getNormalizedRatings(userRatings);
     const userSimilarities = getUserSimilarities(normalizedRatings, targetUser);
-    const ratingPredictions = getRatingPredictions(data, normalizedRatings, userSimilarities, targetUser, 2);
+    const ratingPredictions = getRatingPredictions(
+        data,
+        normalizedRatings,
+        userSimilarities,
+        targetUser,
+        2
+    );
     return ratingPredictions;
 }
 
 const recommend = async (req, res, next) => {
     const { userId } = req.params;
+    if (!userId || userId === 'undefined') {
+        return res.status(200).json({ success: true, products: [] });
+    }
     const rawData = await Rating.find();
     const data = rawData.map((d) => {
         const o = d.toObject();
