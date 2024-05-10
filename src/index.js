@@ -4,9 +4,14 @@ const parseSorts = require('./middleware/parseSorts');
 require('dotenv').config();
 const corsConfig = require('./configs/cors');
 const connectDB = require('./configs/db');
+const elasticsearchConfig = require('./configs/elasticsearch');
 const route = require('./routes');
 
-connectDB();
+async function config() {
+    await connectDB();
+    await elasticsearchConfig();
+}
+config();
 
 // app
 const app = express();

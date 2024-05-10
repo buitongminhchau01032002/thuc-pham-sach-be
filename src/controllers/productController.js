@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const fetch = require('node-fetch');
 
 // [GET] api/product
 const read = async (req, res, next) => {
@@ -106,4 +107,60 @@ const destroy = async (req, res, next) => {
     }
 };
 
-module.exports = { read, create, readOne, update, destroy };
+// [GET] api/product/search?q=:searchString
+const search = async (req, res, next) => {
+    const searchString = req.query.q;
+    try {
+        const body = JSON.stringify({
+            query: {
+                multi_match: {
+                    query: searchString,
+                    analyzer: 'my_vi_analyzer',
+                    fields: ['name', 'description', 'type'],
+                },
+            },
+            highlight: {
+                fields: {
+                    name: {
+                        fragment_size: 100,
+                        number_of_fragments: 4,
+                    },
+                    description: {
+                        fragment_size: 250,
+                        number_of_fragments: 5,
+                    },
+                    type: {
+                        fragment_size: 50,
+                        number_of_fragments: 3,
+                    },
+                },
+            },
+            sort: { _score: { order: 'desc' } },
+        });
+        const elasticRes = await fetch('http://elastic:changeme@localhost:9200/product/_search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body,
+        });
+
+        const elasticData = await elasticRes.json();
+        const products = elasticData.hits.hits.map((hit) => ({
+            _id: hit._id,
+            name: hit.highlight.name?.[0] ?? hit._source.name,
+            description: hit.highlight.description?.[0] ?? hit._source.description,
+            type: hit.highlight.type?.[0] ?? hit._source.type,
+            price: hit._source.price,
+            images: hit._source.images,
+        }));
+        return res.status(200).json({ success: true, products });
+    } catch (err) {
+        console.log(err);
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
+    }
+};
+
+module.exports = { read, create, readOne, update, destroy, search };
