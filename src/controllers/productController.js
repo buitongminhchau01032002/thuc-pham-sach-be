@@ -147,7 +147,7 @@ const search = async (req, res, next) => {
 
         const elasticData = await elasticRes.json();
         const products = elasticData.hits.hits.map((hit) => ({
-            _id: hit._id,
+            id: hit._source.id,
             name: hit.highlight.name?.[0] ?? hit._source.name,
             description: hit.highlight.description?.[0] ?? hit._source.description,
             type: hit.highlight.type?.[0] ?? hit._source.type,
