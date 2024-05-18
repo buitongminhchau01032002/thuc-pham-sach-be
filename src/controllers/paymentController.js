@@ -5,7 +5,7 @@ const CryptoJS = require('crypto-js');
 
 // [POST] api/payment/create-trans
 const createTrans = async (req, res, next) => {
-    const { method, amount } = req.body;
+    const { method, amount, redirecturl } = req.body;
 
     if (!method || !amount || amount <= 0) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
@@ -19,7 +19,7 @@ const createTrans = async (req, res, next) => {
         const item = '[]';
 
         const embed_data = JSON.stringify({
-            redirecturl: 'http://localhost:5173/cart',
+            redirecturl,
         });
         const body = {
             app_id,
