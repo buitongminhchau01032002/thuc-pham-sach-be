@@ -39,6 +39,9 @@ const OrderSchema = new Schema(
             type: String,
             enum: ['unpaid', 'paid'],
         },
+        paymentMethod: {
+            type: String,
+        },
         phone: {
             type: String,
         },
