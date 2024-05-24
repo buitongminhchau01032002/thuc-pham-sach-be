@@ -13,6 +13,10 @@ const ProductTypeSchema = new Schema(
             type: String,
             required: true,
         },
+        nameEN: {
+            type: String,
+            required: true,
+        },
     },
     {
         timestamps: true,

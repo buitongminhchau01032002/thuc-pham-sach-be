@@ -8,32 +8,29 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, productTypes });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
 // [POST] api/product-type
 const create = async (req, res, next) => {
-    const { name } = req.body;
+    const { name, nameEN } = req.body;
 
     // Validate field
-    if (!name) {
+    if (!name || !nameEN) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
     }
 
     try {
         const newProductType = new ProductType({
             name,
+            nameEN,
         });
         await newProductType.save();
         return res.status(201).json({ success: true, productType: newProductType });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -46,9 +43,7 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, productType });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -72,9 +67,7 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, productType: newProductType });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -89,9 +82,7 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
