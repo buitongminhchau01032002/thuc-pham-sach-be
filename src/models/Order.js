@@ -19,6 +19,10 @@ const OrderSchema = new Schema(
             ref: 'coupons',
             require: false,
         },
+        vouchers: {
+            type: Array,
+            default: [],
+        },
         totalPrice: {
             type: Number,
         },
