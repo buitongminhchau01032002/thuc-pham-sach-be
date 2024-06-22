@@ -190,6 +190,50 @@ const read = async (req, res, next) => {
                         },
                     ],
                 },
+                {
+                    id: 'voucher',
+                    name: 'Quản lý phiếu giảm giá',
+                    subFunctions: [
+                        {
+                            id: 'view',
+                            name: 'Xem',
+                        },
+                        {
+                            id: 'add',
+                            name: 'Thêm',
+                        },
+                        {
+                            id: 'delete',
+                            name: 'Xoá',
+                        },
+                        {
+                            id: 'update',
+                            name: 'Sửa',
+                        },
+                    ],
+                },
+                {
+                    id: 'promotion',
+                    name: 'Quản lý chương trình giảm giá',
+                    subFunctions: [
+                        {
+                            id: 'view',
+                            name: 'Xem',
+                        },
+                        {
+                            id: 'add',
+                            name: 'Thêm',
+                        },
+                        {
+                            id: 'delete',
+                            name: 'Xoá',
+                        },
+                        {
+                            id: 'update',
+                            name: 'Sửa',
+                        },
+                    ],
+                },
             ],
         });
     } catch (err) {
