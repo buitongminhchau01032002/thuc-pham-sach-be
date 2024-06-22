@@ -121,39 +121,53 @@ function collaborativeFiltering(data, targetUser) {
 }
 
 const recommend = async (req, res, next) => {
-    const { userId } = req.params;
-    if (!userId || userId === 'undefined') {
-        return res.status(200).json({ success: true, products: [] });
-    }
-    const rawData = await Rating.find();
-    const data = rawData.map((d) => {
-        const o = d.toObject();
-        return {
-            user: o.customer,
-            item: o.product,
-            rating: o.score,
-        };
-    });
+    {
+        try {
+            const { userId } = req.params;
+            if (!userId || userId === 'undefined') {
+                return res.status(200).json({ success: true, products: [] });
+            }
+            const rawData = await Rating.find();
+            const data = rawData.map((d) => {
+                const o = d.toObject();
+                return {
+                    user: o.customer,
+                    item: o.product,
+                    rating: o.score,
+                };
+            });
 
-    const result = collaborativeFiltering(data, userId).slice(0, 15);
+            const result = collaborativeFiltering(data, userId).slice(0, 15);
 
-    const productsPromise = result.map(async (r) => {
-        let _product = await Product.findOne({ _id: mongoose.Types.ObjectId(r.item) })
-            .populate('type')
-            .populate('ratings');
+            const productsPromise = result.map(async (r) => {
+                let _product = await Product.findOne({ _id: mongoose.Types.ObjectId(r.item) })
+                    .populate('type')
+                    .populate('ratings');
 
-        if (_product) {
-            _product = {
-                ..._product.toObject(),
-                ratingPrediction: r.ratingPrediction,
-            };
-            return _product;
+                if (_product) {
+                    _product = {
+                        ..._product.toObject(),
+                        ratingPrediction: r.ratingPrediction,
+                    };
+                    return _product;
+                }
+            });
+
+            const products = await Promise.all(productsPromise);
+
+            console.log(products);
+            let uniqueProducts = [];
+            products.forEach((product) => {
+                if (uniqueProducts.findIndex((p) => p?.id === product?.id) === -1) {
+                    uniqueProducts.push(product);
+                }
+            });
+
+            return res.status(200).json({ success: true, products: uniqueProducts });
+        } catch (error) {
+            return res.status(200).json({ success: true, products: [] });
         }
-    });
-
-    const products = await Promise.all(productsPromise);
-
-    return res.status(200).json({ success: true, products });
+    }
 };
 
 module.exports = { recommend };
