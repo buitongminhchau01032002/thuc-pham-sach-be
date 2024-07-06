@@ -49,12 +49,22 @@ const readActiveByCustomerId = async (req, res, next) => {
     try {
         const customerVouchers = await CustomerVoucher.find({ customerId: id, status: 'active' });
         const vouchers = await Voucher.find();
-        console.log(customerVouchers, vouchers);
+        const result = customerVouchers
+            .map((cv) => {
+                const voucher = vouchers.find((v) => v.id === cv.voucherId);
+                if (voucher) {
+                    return {
+                        ...voucher.toObject(),
+                        id: cv.id,
+                    };
+                }
+                return null;
+            })
+            .filter((v) => v);
+        console.log(result);
         return res.status(200).json({
             success: true,
-            vouchers: vouchers.filter(
-                (v) => customerVouchers.findIndex((cv) => cv.voucherId === v.id) !== -1
-            ),
+            vouchers: result,
         });
     } catch (err) {
         console.log(err);
