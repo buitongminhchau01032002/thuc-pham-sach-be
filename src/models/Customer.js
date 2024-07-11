@@ -28,6 +28,12 @@ const CustomerSchema = new Schema(
         avatar: {
             type: String,
         },
+        listFavorite: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'products',
+            },
+        ],
     },
     {
         timestamps: true,

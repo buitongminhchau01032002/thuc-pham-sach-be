@@ -31,6 +31,20 @@ const ProductSchema = new Schema(
         price: {
             type: Number,
         },
+        discount: {
+            type: {
+                type: String,
+                enum: ['percent', 'amount', 'noDiscount'],
+                required: true,
+            },
+            value: {
+                type: Number,
+                required: true,
+            },
+        },
+        priceDiscounted: {
+            type: Number,
+        },
         type: {
             type: Schema.Types.ObjectId,
             ref: 'product_types',

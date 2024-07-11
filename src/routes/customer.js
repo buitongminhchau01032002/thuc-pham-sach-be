@@ -10,4 +10,9 @@ router.post('/', customerController.create);
 router.put('/:id', customerController.update);
 router.delete('/:id', customerController.destroy);
 
+// Thêm các route mới cho sản phẩm yêu thích
+router.get('/:id/favorites', customerController.getFavorites);
+router.post('/:id/add-to-favorites/:productId', customerController.addToFavorites);
+router.post('/:id/remove-from-favorites/:productId', customerController.removeFromFavorites);
+
 module.exports = router;

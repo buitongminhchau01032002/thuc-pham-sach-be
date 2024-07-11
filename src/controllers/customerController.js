@@ -9,9 +9,7 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, customers });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -29,9 +27,7 @@ const create = async (req, res, next) => {
         let customer;
         customer = await Customer.findOne({ phone });
         if (customer) {
-            return res
-                .status(401)
-                .json({ success: false, status: 401, message: 'phone already exists' });
+            return res.status(401).json({ success: false, status: 401, message: 'phone already exists' });
         }
 
         const hash = await argon2.hash(password);
@@ -41,9 +37,7 @@ const create = async (req, res, next) => {
         return res.status(201).json({ success: true, customer: newCustomer });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -56,9 +50,7 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, customer });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -82,9 +74,7 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, customer: newCustomer });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -99,9 +89,7 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -117,23 +105,17 @@ const login = async (req, res) => {
         let customer;
         customer = await Customer.findOne({ phone });
         if (!customer) {
-            return res
-                .status(401)
-                .json({ success: false, status: 401, message: 'phone incorrect' });
+            return res.status(401).json({ success: false, status: 401, message: 'phone incorrect' });
         }
 
         if (!(await argon2.verify(customer.password, password))) {
-            return res
-                .status(401)
-                .json({ success: false, status: 401, message: 'password incorrect' });
+            return res.status(401).json({ success: false, status: 401, message: 'password incorrect' });
         }
 
         return res.status(200).json({ success: true, customer });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -149,15 +131,11 @@ const changePassword = async (req, res) => {
         let customer;
         customer = await Customer.findOne({ phone });
         if (!customer) {
-            return res
-                .status(401)
-                .json({ success: false, status: 401, message: 'phone incorrect' });
+            return res.status(401).json({ success: false, status: 401, message: 'phone incorrect' });
         }
 
         if (!(await argon2.verify(customer.password, currentPassword))) {
-            return res
-                .status(401)
-                .json({ success: false, status: 401, message: 'password incorrect' });
+            return res.status(401).json({ success: false, status: 401, message: 'password incorrect' });
         }
 
         const hash = await argon2.hash(newPassword);
@@ -175,10 +153,88 @@ const changePassword = async (req, res) => {
         return res.status(200).json({ success: true, customer: newCustomer });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
-module.exports = { read, create, readOne, update, destroy, login, changePassword };
+// [GET] api/customer/:Id/favorites
+const getFavorites = async (req, res, next) => {
+    const id = req.params.id;
+
+    try {
+        console.log(id);
+        const customer = await Customer.findOne({ id }).populate({
+            path: 'listFavorite',
+            populate: {
+                path: 'ratings', // Thay 'ratings' bằng tên field chứa thông tin rating của sản phẩm trong mô hình Product
+            },
+        });
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'Customer not found' });
+        }
+
+        return res.status(200).json({ success: true, favorites: customer.listFavorite });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+// [POST] api/customer/add-to-favorites/:Id/:productId
+const addToFavorites = async (req, res, next) => {
+    const id = req.params.id;
+    const productId = req.params.productId;
+    try {
+        console.log(id);
+        console.log(productId);
+
+        const customer = await Customer.findOne({ id });
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'Customer not found' });
+        }
+
+        // Check if the product already exists in favorites
+        if (customer.listFavorite.includes(productId)) {
+            return res.status(400).json({ success: false, message: 'Product already in favorites' });
+        }
+
+        // Add product to favorites
+        customer.listFavorite.push(productId);
+        await customer.save();
+
+        return res.status(200).json({ success: true, customer });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+// [DELETE] api/customer/remove-from-favorites/:customerId/:productId
+const removeFromFavorites = async (req, res, next) => {
+    const id = req.params.id;
+    const productId = req.params.productId;
+
+    try {
+        console.log(id);
+        console.log(productId);
+        const customer = await Customer.findOne({ id });
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'Customer not found' });
+        }
+
+        // Check if the product exists in favorites
+        if (!customer.listFavorite.includes(productId)) {
+            return res.status(400).json({ success: false, message: 'Product not found in favorites' });
+        }
+
+        // Remove product from favorites
+        customer.listFavorite = customer.listFavorite.filter((fav) => fav.toString() !== productId);
+        await customer.save();
+
+        return res.status(200).json({ success: true, customer });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+module.exports = { read, create, readOne, update, destroy, login, changePassword, getFavorites, addToFavorites, removeFromFavorites };

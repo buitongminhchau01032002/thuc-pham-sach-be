@@ -26,6 +26,18 @@ const DetailOrderSchema = new Schema(
             type: Number,
             require: true,
         },
+        discount: {
+            type: {
+                type: String,
+                enum: ['percent', 'amount', 'noDiscount'],
+            },
+            value: {
+                type: Number,
+            },
+        },
+        priceDiscounted: {
+            type: Number,
+        },
         totalPrice: {
             type: Number,
             require: true,

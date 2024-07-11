@@ -14,7 +14,7 @@ const read = async (req, res, next) => {
 
 // [POST] api/product
 const create = async (req, res, next) => {
-    const { name, nameEN, description, descriptionEN, importPrice, price, type, images, status } = req.body;
+    const { name, nameEN, description, descriptionEN, importPrice, price, type, images, status, discount } = req.body;
     // Validate field
     if (!name || !nameEN || !description || !descriptionEN || !importPrice || !price || !type || !images) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
@@ -28,9 +28,11 @@ const create = async (req, res, next) => {
             descriptionEN,
             importPrice,
             price,
+            priceDiscounted,
             type,
             images,
             status,
+            discount,
         });
         await newProduct.save();
 
