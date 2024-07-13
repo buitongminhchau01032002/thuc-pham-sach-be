@@ -3,6 +3,69 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongooseDelete = require('mongoose-delete');
 const Schema = mongoose.Schema;
 
+// Subschemas for province, district, and commune
+const ProvinceSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
+const DistrictSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+        ProvinceId: {
+            type: Number,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
+const CommuneSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+        DistrictId: {
+            type: Number,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
 const OrderSchema = new Schema(
     {
         id: {
@@ -48,6 +111,15 @@ const OrderSchema = new Schema(
         },
         phone: {
             type: String,
+        },
+        province: {
+            type: ProvinceSchema,
+        },
+        district: {
+            type: DistrictSchema,
+        },
+        commune: {
+            type: CommuneSchema,
         },
         address: {
             type: String,

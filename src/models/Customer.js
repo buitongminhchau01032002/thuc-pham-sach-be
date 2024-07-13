@@ -3,6 +3,69 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongooseDelete = require('mongoose-delete');
 const Schema = mongoose.Schema;
 
+// Subschemas for province, district, and commune
+const ProvinceSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
+const DistrictSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+        ProvinceId: {
+            type: Number,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
+const CommuneSchema = new Schema(
+    {
+        Id: {
+            type: Number,
+            required: true,
+        },
+        Code: {
+            type: String,
+            required: true,
+        },
+        Name: {
+            type: String,
+            required: true,
+        },
+        DistrictId: {
+            type: Number,
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
 const CustomerSchema = new Schema(
     {
         id: {
@@ -13,12 +76,28 @@ const CustomerSchema = new Schema(
             type: String,
             required: true,
         },
+        email: {
+            type: String,
+            required: true,
+        },
         phone: {
             type: String,
             required: true,
         },
         password: {
             type: String,
+            required: true,
+        },
+        province: {
+            type: ProvinceSchema,
+            required: true,
+        },
+        district: {
+            type: DistrictSchema,
+            required: true,
+        },
+        commune: {
+            type: CommuneSchema,
             required: true,
         },
         address: {

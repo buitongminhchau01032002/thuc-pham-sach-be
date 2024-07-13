@@ -11,9 +11,7 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, orders });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -98,6 +96,9 @@ const create = async (req, res, next) => {
         intoMoney,
         exchangeMoney,
         phone,
+        province,
+        district,
+        commune,
         address,
     } = req.body;
 
@@ -117,6 +118,9 @@ const create = async (req, res, next) => {
             totalPrice,
             intoMoney,
             exchangeMoney,
+            province,
+            district,
+            commune,
             address,
             phone,
             coupon,
@@ -124,9 +128,7 @@ const create = async (req, res, next) => {
         await newOrder.save();
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     // Create detail order
@@ -135,9 +137,7 @@ const create = async (req, res, next) => {
         newDetailOrders = await createDetail({ orderObject: newOrder, detailObjs: details });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     // update quantity
@@ -145,9 +145,7 @@ const create = async (req, res, next) => {
         await updateProductQuantity(details);
     } catch (error) {
         console.log(error);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     // Get order and response
@@ -181,9 +179,7 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, order: { ...order.toObject() } });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -207,9 +203,7 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, order: newOrder });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -224,9 +218,7 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 

@@ -15,7 +15,7 @@ const read = async (req, res, next) => {
 
 // [POST] api/customer
 const create = async (req, res, next) => {
-    const { name, address, phone, password, avatar } = req.body;
+    const { name, email, province, district, commune, address, phone, password, avatar } = req.body;
 
     // Validate field
     if (!name || !address || !phone || !password) {
@@ -32,7 +32,7 @@ const create = async (req, res, next) => {
 
         const hash = await argon2.hash(password);
 
-        const newCustomer = new Customer({ name, address, phone, password: hash, avatar });
+        const newCustomer = new Customer({ name, email, province, district, commune, address, phone, password: hash, avatar });
         await newCustomer.save();
         return res.status(201).json({ success: true, customer: newCustomer });
     } catch (err) {
