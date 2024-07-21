@@ -78,7 +78,6 @@ const CustomerSchema = new Schema(
         },
         email: {
             type: String,
-            required: true,
         },
         phone: {
             type: String,
@@ -90,15 +89,12 @@ const CustomerSchema = new Schema(
         },
         province: {
             type: ProvinceSchema,
-            required: true,
         },
         district: {
             type: DistrictSchema,
-            required: true,
         },
         commune: {
             type: CommuneSchema,
-            required: true,
         },
         address: {
             type: String,
